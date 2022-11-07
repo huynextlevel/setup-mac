@@ -4,18 +4,9 @@
   tasks:
     - name: Install watchman
       shell: brew install watchman
-      args:
-        creates: /usr/local/bin/watchman
 
-#- name: Check if react-native-cli exists
-#      shell: react-native --version
-#      register: rnVersion
-#      ignore_errors: yes
-#      no_log: True
-
-#    - name: Install react-native-Cli
-#      shell: npm i -g react-native-cli
-#      when: rnVersion.failed == True
+    - name: Install cocoapods
+      shell: brew install cocoapods
 
     # - name: Check if ruui-cli exists
     #   shell: ruui --version

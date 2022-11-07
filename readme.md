@@ -30,22 +30,17 @@ List of tools that will be install by Ansible..
 
 #### Developer tools
 - [x] rvm (ruby version manager)
-- [x] ruby@2.4.1 (using `rvm`)
 - [x] nvm (node version manager)
-- [x] nodejs@12.14.0 (using `nvm`)
+- [x] nodejs@16.18.1 (using `nvm`)
 - [x] yarn (yet another node.js package manager)
 
 #### React Native tools
 - [x] watchman
-- [ ] react-native-cli
 - [x] ruui-cli (react based universal App development tool)
-- [ ] CocoaPods, we'll need to run `pod install cocoapods` on our own (it take too long time to run, so I don't think we want to have it installed by Ansible)
-- [ ] OpenJdk, run `brew tap AdoptOpenJDK/openjdk` and then `brew cask install adoptopenjdk8`
+- [x] CocoaPods, we'll need to run `pod install cocoapods` on our own (it take too long time to run, so I don't think we want to have it installed by Ansible)
 
 #### Common software
 - [x] Chrome
-- [x] Dropbox
-- [x] Slack
 - [x] Visual Studio Code 
 
 #### Other software that you may interest with (paid, not in scope of this Repo)k

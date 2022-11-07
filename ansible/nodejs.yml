@@ -22,5 +22,3 @@
 
     - name: Install yarn
       shell: brew install yarn --ignore-dependencies
-      # args:
-      #   creates: /usr/local/bin/yarn
