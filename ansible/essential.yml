@@ -27,11 +27,6 @@
     - name: Install Terraform
       shell: brew install terraform
 
-    - name: Install iTerm2 (using Brew)
-      shell: brew cask install iterm2
-      args:
-        creates: /Applications/iTerm.app
-
     - name: Deep Theme colors for iTerm
       template:
         src: ./static/geek.itermcolors

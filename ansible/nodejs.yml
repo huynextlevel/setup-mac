@@ -4,7 +4,7 @@
   tasks:
     - name: Download Nvm installation script
       get_url:
-        url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh
+        url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
         dest: ~/Sources/nvmInstaller.sh
 
     - name: Install Nvm
@@ -15,7 +15,7 @@
     - name: Install Node.js version
       shell: |
         source ~/.nvm/nvm.sh
-        nvm install 16.18.1 && nvm alias default 16.18.1
+        nvm install 20.15.0 && nvm alias default 20.15.0
       args:
         executable: /bin/zsh
         creates: ~/.nvm/versions/node

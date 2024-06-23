@@ -7,13 +7,3 @@
 
     - name: Install cocoapods
       shell: brew install cocoapods
-
-    # - name: Check if ruui-cli exists
-    #   shell: ruui --version
-    #   register: ruuiVersion
-    #   ignore_errors: yes
-    #   no_log: True
-
-    # - name: Install ruui-cli
-    #   shell: npm i -g ruui-cli
-    #   when: ruuiVersion.failed == True
