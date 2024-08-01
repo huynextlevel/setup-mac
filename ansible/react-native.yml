@@ -7,3 +7,14 @@
 
     - name: Install cocoapods
       shell: brew install cocoapods
+
+    - name: Install OpenJDK zulu
+      shell: brew install --cask zulu@17
+    
+    - name: Set environment variables in ~/.zshrc
+      shell: |
+        echo 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home' >> ~/.zshrc
+        echo 'export ANDROID_HOME=$HOME/Library/Android/sdk' >> ~/.zshrc
+        echo 'export PATH=$PATH:$ANDROID_HOME/emulator' >> ~/.zshrc
+        echo 'export PATH=$PATH:$ANDROID_HOME/platform-tools' >> ~/.zshrc
+        source ~/.zshrc

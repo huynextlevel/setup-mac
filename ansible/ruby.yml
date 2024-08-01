@@ -1,6 +1,0 @@
-- name: Ruby
-  hosts: local
-
-  tasks:
-    - name: Install Rvm - stable version
-      shell: brew install ruby

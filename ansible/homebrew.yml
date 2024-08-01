@@ -11,8 +11,3 @@
       shell: |
         yes | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
       when: not brew.stat.exists
-
-    - name: Update brew formula, tap Caskroom/Cask from Github
-      shell: |
-        brew update
-        # brew tap homebrew/cask-cask
