@@ -19,16 +19,25 @@
         - static/spaceship-operator-mono.zsh-theme
 
     - name: Install git
-      shell: brew install git
+      homebrew:
+        name: git
+        state: present
 
     - name: Install openssl
-      shell: brew install openssl
+      homebrew:
+        name: openssl
+        state: present
 
-    - name: Install Node.js
-      shell: brew install node
+    - name: Install Node.js 18
+      homebrew:
+        name: node@18
+        state: present
+        link: true
 
-    - name: Install Yarn
-      shell: brew install yarn
+    - name: Install specific version of Yarn
+      homebrew:
+        name: yarn@1.22.22
+        state: present
 
     - name: Deep Theme colors for iTerm
       template:
@@ -40,8 +49,8 @@
         repo: https://github.com/robbyrussell/oh-my-zsh.git
         dest: "~/Sources/oh-my-zsh"
         update: no
-    - name: Install spaceship-operator-mono theme for Zsh
 
+    - name: Install spaceship-operator-mono theme for Zsh
       copy:
         src: ./static/spaceship-operator-mono.zsh-theme
         dest: ~/Sources/oh-my-zsh/custom/themes/spaceship-operator-mono.zsh-theme
@@ -70,4 +79,20 @@
 
     - name: Set Zsh as the default shell!
       become: true
-      user: name='{{ansible_user}}' shell=/bin/zsh
+      user: 
+        name: '{{ansible_user}}'
+        shell: /bin/zsh
+
+    - name: Add Homebrew to PATH in zsh config
+      blockinfile:
+        path: ~/.zshrc
+        marker: "# {mark} HOMEBREW PATH"
+        block: |
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+      when: brew_binary.stat.exists
+
+    - name: Ensure Homebrew PATH is sourced
+      shell: source ~/.zshrc
+      args:
+        executable: /bin/zsh
+      when: brew_binary.stat.exists

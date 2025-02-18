@@ -5,9 +5,15 @@
     - name: Check if Homebrew is already installed
       stat:
         path: /opt/homebrew/bin/brew
-      register: brew
+      register: brew_binary
+
+    - name: Check if Intel Homebrew is installed
+      stat:
+        path: /usr/local/bin/brew
+      register: intel_brew_binary
+      when: not brew_binary.stat.exists
 
     - name: Install Homebrew
       shell: |
-        yes | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      when: not brew.stat.exists
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      when: not brew_binary.stat.exists and not intel_brew_binary.stat.exists

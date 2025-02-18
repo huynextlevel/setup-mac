@@ -1,9 +1,17 @@
 ---
 - name: Run all the local playbooks
   hosts: local
+  gather_facts: true
+
+- name: Check minimum Ansible version
+  hosts: local
+  tasks:
+    - name: Verify Ansible version
+      assert:
+        that: "ansible_version.full is version_compare('2.9.0', '>=')"
+        msg: "This playbook requires Ansible 2.9.0 or greater"
 
 - import_playbook: ansible/initialize.yml
 - import_playbook: ansible/homebrew.yml
 - import_playbook: ansible/essential.yml
 - import_playbook: ansible/react-native.yml
-- import_playbook: ansible/rust.yml

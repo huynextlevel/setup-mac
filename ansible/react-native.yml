@@ -3,18 +3,38 @@
 
   tasks:
     - name: Install watchman
-      shell: brew install watchman
+      homebrew:
+        name: watchman
+        state: present
 
     - name: Install cocoapods
-      shell: brew install cocoapods
+      homebrew:
+        name: cocoapods
+        state: present
 
     - name: Install OpenJDK zulu
-      shell: brew install --cask zulu@17
+      homebrew_cask:
+        name: zulu@17
+        state: present
     
+    - name: Check if environment variables exist in ~/.zshrc
+      shell: grep -q "JAVA_HOME\|ANDROID_HOME" ~/.zshrc
+      register: env_vars_check
+      ignore_errors: true
+      changed_when: false
+
     - name: Set environment variables in ~/.zshrc
-      shell: |
-        echo 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home' >> ~/.zshrc
-        echo 'export ANDROID_HOME=$HOME/Library/Android/sdk' >> ~/.zshrc
-        echo 'export PATH=$PATH:$ANDROID_HOME/emulator' >> ~/.zshrc
-        echo 'export PATH=$PATH:$ANDROID_HOME/platform-tools' >> ~/.zshrc
-        source ~/.zshrc
+      blockinfile:
+        path: ~/.zshrc
+        marker: "# {mark} REACT NATIVE ENVIRONMENT VARIABLES"
+        block: |
+          export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+          export ANDROID_HOME=$HOME/Library/Android/sdk
+          export PATH=$PATH:$ANDROID_HOME/emulator
+          export PATH=$PATH:$ANDROID_HOME/platform-tools
+      when: env_vars_check.rc != 0
+
+    - name: Source ~/.zshrc
+      shell: source ~/.zshrc
+      args:
+        executable: /bin/zsh
