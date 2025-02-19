@@ -1,9 +1,5 @@
 - name: Initialize before setup
   hosts: local
-  vars_prompt:
-    - name: ansible_become_pass
-      prompt: "Enter sudo password (required for installations)"
-      private: yes
 
   tasks:
     - name: Get username from system

@@ -9,7 +9,7 @@
 
 ### Installation
 1. Clone this repo to your local drive `git clone https://github.com/huynextlevel/setup-mac`
-2. Run `ansible-playbook -i hosts.yml ansible.yml`
+2. Run `ansible-playbook -i hosts.yml ansible.yml --ask-become-pass`
 
 ### Software list:
 List of tools that will be install by Ansible..

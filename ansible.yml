@@ -3,15 +3,20 @@
   hosts: local
   gather_facts: true
 
-- name: Check minimum Ansible version
-  hosts: local
-  tasks:
-    - name: Verify Ansible version
-      assert:
-        that: "ansible_version.full is version_compare('2.9.0', '>=')"
-        msg: "This playbook requires Ansible 2.9.0 or greater"
+- name: Initialize setup
+  import_playbook: ansible/initialize.yml
 
-- import_playbook: ansible/initialize.yml
-- import_playbook: ansible/homebrew.yml
-- import_playbook: ansible/essential.yml
-- import_playbook: ansible/react-native.yml
+- name: Setup Homebrew
+  import_playbook: ansible/homebrew.yml
+  vars:
+    ansible_become_pass: "{{ hostvars['localhost']['ansible_become_pass'] }}"
+
+- name: Setup essential software
+  import_playbook: ansible/essential.yml
+  vars:
+    ansible_become_pass: "{{ hostvars['localhost']['ansible_become_pass'] }}"
+
+- name: Setup React Native environment
+  import_playbook: ansible/react-native.yml
+  vars:
+    ansible_become_pass: "{{ hostvars['localhost']['ansible_become_pass'] }}"
