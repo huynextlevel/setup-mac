@@ -33,17 +33,6 @@
         name: openssl
         state: present
 
-    - name: Install Node.js 18
-      homebrew:
-        name: node@18
-        state: present
-        link: true
-
-    - name: Install specific version of Yarn
-      homebrew:
-        name: yarn@1.22.22
-        state: present
-
     - name: Deep Theme colors for iTerm
       template:
         src: ./static/geek.itermcolors
