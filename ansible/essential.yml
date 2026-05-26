@@ -13,15 +13,7 @@
         state: directory
       with_items:
         - ~/Sources
-        - ~/Sources/theme
         - ~/Projects
-
-    - name: Copy configuration files
-      copy:
-        src: "{{item}}"
-        dest: ~/Sources
-      with_items:
-        - static/spaceship-operator-mono.zsh-theme
 
     - name: Install git
       homebrew:
@@ -33,21 +25,16 @@
         name: openssl
         state: present
 
-    - name: Deep Theme colors for iTerm
-      template:
-        src: ./static/geek.itermcolors
-        dest: ~/Sources/theme/geek.itermcolors
+    - name: Install pnpm
+      homebrew:
+        name: pnpm
+        state: present
 
     - name: Clone oh-my-zsh
       git:
         repo: https://github.com/robbyrussell/oh-my-zsh.git
         dest: "~/Sources/oh-my-zsh"
         update: no
-
-    - name: Install spaceship-operator-mono theme for Zsh
-      copy:
-        src: ./static/spaceship-operator-mono.zsh-theme
-        dest: ~/Sources/oh-my-zsh/custom/themes/spaceship-operator-mono.zsh-theme
 
     - name: Install Auto suggestions plugin for Zsh
       git:
@@ -58,6 +45,29 @@
       git:
         repo: https://github.com/zsh-users/zsh-syntax-highlighting
         dest: ~/Sources/oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+
+    - name: Clone Powerlevel10k theme
+      git:
+        repo: https://github.com/romkatv/powerlevel10k.git
+        dest: ~/powerlevel10k
+        depth: 1
+        update: no
+
+    - name: Install nvm
+      git:
+        repo: https://github.com/nvm-sh/nvm.git
+        dest: ~/.nvm
+        version: v0.40.4
+        update: no
+
+    - name: Install Node 20.19.4 via nvm
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm install 20.19.4
+        nvm alias default 20.19.4
+      args:
+        executable: /bin/zsh
+        creates: ~/.nvm/versions/node/v20.19.4/bin/node
 
     - name: Create ~./oh-my-zsh symlink
       file:
@@ -71,10 +81,16 @@
         dest: ~/.zshrc
         force: no
 
+    - name: Copy .p10k.zsh to user's Home
+      copy:
+        src: ./static/.p10k.zsh
+        dest: ~/.p10k.zsh
+        force: no
+
     - name: Set Zsh as the default shell!
       become: true
       become_method: sudo
-      user: 
+      user:
         name: '{{ansible_user}}'
         shell: /bin/zsh
 

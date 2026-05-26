@@ -1,5 +1,10 @@
 - name: Initialize before setup
   hosts: local
+  vars_prompt:
+    - name: become_pass
+      prompt: "Enter sudo password"
+      private: yes
+      unsafe: yes
 
   tasks:
     - name: Get username from system
@@ -8,12 +13,13 @@
       changed_when: false
       register: username_result
 
-    - name: Set ansible user fact
-      set_fact: 
-        ansible_user: "{{username_result.stdout}}"
+    - name: Set facts (user + sudo password)
+      set_fact:
+        ansible_user: "{{ username_result.stdout }}"
+        ansible_become_pass: "{{ become_pass }}"
+      no_log: true
 
     - name: Verify sudo access
       become: true
       command: whoami
       changed_when: false
-      register: sudo_check

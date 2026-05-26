@@ -1,22 +1,12 @@
 ---
-- name: Run all the local playbooks
-  hosts: local
-  gather_facts: true
-
 - name: Initialize setup
   import_playbook: ansible/initialize.yml
 
 - name: Setup Homebrew
   import_playbook: ansible/homebrew.yml
-  vars:
-    ansible_become_pass: "{{ hostvars['localhost']['ansible_become_pass'] }}"
 
 - name: Setup essential software
   import_playbook: ansible/essential.yml
-  vars:
-    ansible_become_pass: "{{ hostvars['localhost']['ansible_become_pass'] }}"
 
 - name: Setup React Native environment
   import_playbook: ansible/react-native.yml
-  vars:
-    ansible_become_pass: "{{ hostvars['localhost']['ansible_become_pass'] }}"

@@ -1,0 +1,175 @@
+---
+# MacBook local-server setup. Opt-in per machine — KHÔNG import vào ansible.yml.
+# Chạy thủ công khi cần biến máy thành server:
+#   ansible-playbook -i hosts.yml ansible/server.yml
+
+- name: Setup MacBook as local server
+  hosts: local
+  vars_prompt:
+    - name: become_pass
+      prompt: "Enter sudo password"
+      private: yes
+      unsafe: yes
+
+  vars:
+    ssh_allowed_user: "{{ ansible_user_id }}"
+
+    tailscale_enable_ssh: true
+    tailscale_advertise_exit_node: false
+    tailscale_advertise_routes: ""
+    tailscale_accept_dns: true
+
+    disable_sleep: true
+    disable_disk_sleep: true
+    disable_power_nap: true
+    enable_wake_on_lan: true
+    auto_restart_on_power_failure: true
+
+  tasks:
+    - name: Set become password fact
+      set_fact:
+        ansible_become_pass: "{{ become_pass }}"
+      no_log: true
+
+    # ============================================================
+    # 1. POWER MANAGEMENT — chặn sleep khi đóng nắp
+    # ============================================================
+    - name: Disable system sleep (lid close won't sleep)
+      become: true
+      command: pmset -a disablesleep 1
+      when: disable_sleep
+      changed_when: true
+
+    - name: Set sleep timer to 0 (never sleep)
+      become: true
+      command: pmset -a sleep 0
+      when: disable_sleep
+      changed_when: true
+
+    - name: Disable disk sleep
+      become: true
+      command: pmset -a disksleep 0
+      when: disable_disk_sleep
+      changed_when: true
+
+    - name: Disable Power Nap
+      become: true
+      command: pmset -a powernap 0
+      when: disable_power_nap
+      changed_when: true
+
+    - name: Enable Wake on LAN
+      become: true
+      command: pmset -a womp 1
+      when: enable_wake_on_lan
+      changed_when: true
+
+    - name: Auto restart after power failure
+      become: true
+      command: pmset -a autorestart 1
+      when: auto_restart_on_power_failure
+      changed_when: true
+
+    - name: Show current power settings
+      command: pmset -g
+      register: pmset_status
+      changed_when: false
+
+    - name: Display power settings
+      debug:
+        var: pmset_status.stdout_lines
+
+    # ============================================================
+    # 2. SSH REMOTE LOGIN
+    # ============================================================
+    - name: Enable Remote Login (SSH)
+      become: true
+      command: systemsetup -setremotelogin on
+      register: remote_login_result
+      changed_when: "'on' in (remote_login_result.stdout | lower)"
+
+    - name: Check Remote Login status
+      become: true
+      command: systemsetup -getremotelogin
+      register: remote_login_status
+      changed_when: false
+
+    - name: Show Remote Login status
+      debug:
+        var: remote_login_status.stdout
+
+    # ============================================================
+    # 3. TAILSCALE
+    # ============================================================
+    - name: Check if Homebrew is installed
+      stat:
+        path: /opt/homebrew/bin/brew
+      register: brew_binary
+
+    - name: Fail if Homebrew not installed
+      fail:
+        msg: "Homebrew chưa được cài. Chạy ansible.yml hoặc cài thủ công tại https://brew.sh trước."
+      when: not brew_binary.stat.exists
+
+    - name: Install Tailscale via Homebrew
+      homebrew_cask:
+        name: tailscale-app
+        state: present
+        sudo_password: "{{ ansible_become_pass }}"
+
+    - name: Check if Tailscale is running and authenticated
+      command: tailscale status --json
+      register: tailscale_status
+      changed_when: false
+      failed_when: false
+
+    - name: Build Tailscale up command
+      set_fact:
+        tailscale_up_cmd: >-
+          tailscale up
+          {% if tailscale_enable_ssh %}--ssh{% endif %}
+          {% if tailscale_advertise_exit_node %}--advertise-exit-node{% endif %}
+          {% if tailscale_advertise_routes %}--advertise-routes={{ tailscale_advertise_routes }}{% endif %}
+          {% if tailscale_accept_dns %}--accept-dns=true{% endif %}
+
+    - name: Show Tailscale auth instructions
+      debug:
+        msg:
+          - "============================================================"
+          - "Tailscale chưa được auth. Chạy lệnh sau và follow URL để login:"
+          - ""
+          - "  sudo {{ tailscale_up_cmd }}"
+          - ""
+          - "Sau khi login xong, chạy lại playbook để verify."
+          - "============================================================"
+      when: "'NeedsLogin' in tailscale_status.stdout or tailscale_status.rc != 0"
+
+    - name: Get Tailscale IP
+      command: tailscale ip -4
+      register: tailscale_ip
+      changed_when: false
+      failed_when: false
+
+    - name: Show Tailscale IP
+      debug:
+        msg: "Tailscale IP: {{ tailscale_ip.stdout }}"
+      when: tailscale_ip.rc == 0 and tailscale_ip.stdout != ""
+
+    # ============================================================
+    # 4. SUMMARY
+    # ============================================================
+    - name: Setup summary
+      debug:
+        msg:
+          - "==================== SETUP HOÀN TẤT ===================="
+          - "Power: sleep disabled, auto-restart enabled"
+          - "SSH: enabled"
+          - "Tailscale IP: {{ tailscale_ip.stdout | default('chưa auth') }}"
+          - ""
+          - "Bước tiếp theo (làm thủ công):"
+          - "  1. Vào https://login.tailscale.com/admin/machines"
+          - "     → chọn máy này → Disable key expiry"
+          - "  2. Bật MagicDNS tại https://login.tailscale.com/admin/dns"
+          - "  3. Test: từ thiết bị khác trong tailnet chạy:"
+          - "       ssh {{ ssh_allowed_user }}@<tailscale-ip>"
+          - "========================================================="

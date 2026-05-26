@@ -16,7 +16,17 @@
       homebrew_cask:
         name: zulu@17
         state: present
-    
+        sudo_password: "{{ ansible_become_pass }}"
+
+    - name: Install EAS CLI globally
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm use default
+        npm install -g eas-cli
+      args:
+        executable: /bin/zsh
+        creates: ~/.nvm/versions/node/v20.19.4/bin/eas
+
     - name: Check if environment variables exist in ~/.zshrc
       shell: grep -q "JAVA_HOME\|ANDROID_HOME" ~/.zshrc
       register: env_vars_check
