@@ -42,6 +42,7 @@ Notes:
 - `oh-my-zsh` cloned to `~/Sources/oh-my-zsh` (symlinked from `~/.oh-my-zsh`)
 - Plugins: `zsh-autosuggestions`, `zsh-syntax-highlighting`
 - Theme: [Powerlevel10k](https://github.com/romkatv/powerlevel10k) cloned to `~/powerlevel10k`
+- Fonts: `MesloLGS NF` (Regular / Bold / Italic / Bold Italic) installed to `~/Library/Fonts/` — required for p10k icons. Set this as the font in your terminal (iTerm2 → Preferences → Profiles → Text → Font).
 - Static configs deployed to home: `~/.zshrc`, `~/.p10k.zsh`
 - Homebrew `shellenv` appended to `~/.zshrc`
 

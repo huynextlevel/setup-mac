@@ -59,6 +59,17 @@
         update: no
         recursive: no
 
+    - name: Install MesloLGS NF fonts (required for p10k icons)
+      copy:
+        src: "static/fonts/{{ item }}"
+        dest: "~/Library/Fonts/{{ item }}"
+        force: no
+      with_items:
+        - "MesloLGS NF Regular.ttf"
+        - "MesloLGS NF Bold.ttf"
+        - "MesloLGS NF Italic.ttf"
+        - "MesloLGS NF Bold Italic.ttf"
+
     - name: Install nvm
       git:
         repo: https://github.com/nvm-sh/nvm.git
