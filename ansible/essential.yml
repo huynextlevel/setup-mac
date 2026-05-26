@@ -35,16 +35,21 @@
         repo: https://github.com/robbyrussell/oh-my-zsh.git
         dest: "~/Sources/oh-my-zsh"
         update: no
+        recursive: no
 
     - name: Install Auto suggestions plugin for Zsh
       git:
         repo: https://github.com/zsh-users/zsh-autosuggestions
         dest: ~/Sources/oh-my-zsh/custom/plugins/zsh-autosuggestions
+        update: no
+        recursive: no
 
     - name: Install Syntax highlighting plugin for Zsh
       git:
         repo: https://github.com/zsh-users/zsh-syntax-highlighting
         dest: ~/Sources/oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+        update: no
+        recursive: no
 
     - name: Clone Powerlevel10k theme
       git:
@@ -52,6 +57,7 @@
         dest: ~/powerlevel10k
         depth: 1
         update: no
+        recursive: no
 
     - name: Install nvm
       git:
@@ -59,6 +65,7 @@
         dest: ~/.nvm
         version: v0.40.4
         update: no
+        recursive: no
 
     - name: Install Node 20.19.4 via nvm
       shell: |
